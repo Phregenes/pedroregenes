@@ -236,7 +236,11 @@ export function ParticleDrawing({
 
     function frame(now: number) {
       const isActive = activeRef.current;
-      if (isActive && !wasActive) startTime = now;
+      if (isActive && !wasActive) {
+        // Kick straight into the transition to the next drawing on boot,
+        // instead of waiting through a full hold period first.
+        startTime = now - HOLD_MS;
+      }
       wasActive = isActive;
 
       ctx2d!.clearRect(0, 0, width, height);
