@@ -67,7 +67,7 @@ export const experiences: Experience[] = [
     id: "vizo",
     code: "CASE.01",
     org: "Vizo",
-    role: "Product Manager",
+    role: "Product Engineer",
     duration: "2025.11 → ATUAL",
     status: "ativo",
     summary:

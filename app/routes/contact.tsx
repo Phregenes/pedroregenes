@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import type { Route } from "./+types/contact";
-import { HalftoneField } from "~/components/halftone-field";
+import { ParticleDrawing } from "~/components/particle-drawing";
 import { profile } from "~/data/resume";
 
 export function meta({}: Route.MetaArgs) {
@@ -59,7 +59,11 @@ export default function Contact() {
             </p>
           </div>
           <div className="hidden md:block w-72 h-40 border border-line relative overflow-hidden">
-            <HalftoneField className="absolute inset-0 h-full w-full" soundEnabled={false} />
+            <ParticleDrawing
+              className="absolute inset-0 h-full w-full"
+              soundEnabled={false}
+              active={false}
+            />
           </div>
         </div>
       </section>

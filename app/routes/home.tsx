@@ -1,7 +1,7 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router";
 import type { Route } from "./+types/home";
-import { HalftoneField } from "~/components/halftone-field";
+import { ParticleDrawing } from "~/components/particle-drawing";
 import {
   initAudio,
   playBlip,
@@ -46,9 +46,15 @@ export default function Home() {
     });
   }, []);
 
+  // Stop the ambient drone as soon as the user navigates away from the home
+  // page, so it doesn't keep playing in the background on other routes.
+  useEffect(() => {
+    return () => setDroneActive(false);
+  }, []);
+
   return (
     <section className="relative h-[calc(100dvh-3.5rem)] overflow-hidden">
-      <HalftoneField
+      <ParticleDrawing
         className="absolute inset-0 h-full w-full"
         soundEnabled={soundOn}
         active={booted}
@@ -61,7 +67,7 @@ export default function Home() {
 
       {booted ? (
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center px-6">
-          <div className="bg-paper border border-line px-6 py-8 md:px-14 md:py-11 text-center max-w-xl flicker-in">
+          <div className="bg-paper/78 backdrop-blur-md border border-line px-6 py-8 md:px-14 md:py-11 text-center max-w-xl flicker-in">
             <p className="tag text-muted mb-4">
               CERTAIN UNCERTAINTIES // PORTFOLIO.EXE
             </p>
@@ -89,7 +95,7 @@ export default function Home() {
         </div>
       ) : (
         <div className="absolute inset-0 flex items-center justify-center px-6">
-          <div className="pointer-events-auto bg-paper border border-line px-8 py-10 md:px-16 md:py-14 text-center max-w-md">
+          <div className="pointer-events-auto bg-paper/78 backdrop-blur-md border border-line px-8 py-10 md:px-16 md:py-14 text-center max-w-md">
             <p className="tag text-muted mb-4">
               CERTAIN UNCERTAINTIES // PORTFOLIO.EXE
             </p>
@@ -113,7 +119,7 @@ export default function Home() {
           COORD = {profile.location}
         </span>
         <span className="hidden sm:block justify-self-center opacity-70 text-center">
-          ARRASTE OU CLIQUE PARA INTERAGIR
+          PASSE O MOUSE OU CLIQUE PARA INTERAGIR
         </span>
         <div className="flex flex-col items-end gap-2 justify-self-end">
           <span className="bracket">
