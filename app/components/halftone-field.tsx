@@ -1,9 +1,10 @@
 import { useEffect, useRef } from "react";
 import { initAudio, playBlip } from "~/lib/audio-engine";
 
-const SPACING = 22;
-const MAX_DOT = 8.6;
-const SOFT_EDGE = 150;
+const SPACING = 17;
+const MAX_DOT = 9.8;
+const SOFT_EDGE = 110;
+const FROZEN_T = 1.35;
 
 type Pulse = { x: number; y: number; born: number };
 
@@ -24,17 +25,22 @@ function smoothstep(v: number) {
 export type HalftoneFieldProps = {
   className?: string;
   soundEnabled: boolean;
+  /** When false the field is frozen (no motion, no pointer reaction). */
+  active?: boolean;
   onPulse?: () => void;
 };
 
 export function HalftoneField({
   className,
   soundEnabled,
+  active = true,
   onPulse,
 }: HalftoneFieldProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const soundRef = useRef(soundEnabled);
   soundRef.current = soundEnabled;
+  const activeRef = useRef(active);
+  activeRef.current = active;
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -53,6 +59,7 @@ export function HalftoneField({
     const pulses: Pulse[] = [];
     let raf = 0;
     let startTime = performance.now();
+    let wasActive = activeRef.current;
 
     function resize() {
       if (!canvas || !parent) return;
@@ -76,6 +83,7 @@ export function HalftoneField({
     }
 
     function onPointerMove(e: PointerEvent) {
+      if (!activeRef.current) return;
       const p = toLocal(e.clientX, e.clientY);
       pointer.x = p.x;
       pointer.y = p.y;
@@ -87,6 +95,7 @@ export function HalftoneField({
     }
 
     function spawnPulse(clientX: number, clientY: number) {
+      if (!activeRef.current) return;
       const p = toLocal(clientX, clientY);
       pulses.push({ x: p.x, y: p.y, born: performance.now() });
       if (pulses.length > 6) pulses.shift();
@@ -112,24 +121,42 @@ export function HalftoneField({
     canvas.addEventListener("pointerdown", onPointerDown);
 
     function frame(now: number) {
-      const t = (now - startTime) / 1000;
+      const isActive = activeRef.current;
+
+      if (isActive && !wasActive) {
+        // Waking up: restart the clock so motion begins fresh.
+        startTime = now;
+      }
+      wasActive = isActive;
+
+      const t = isActive ? (now - startTime) / 1000 : FROZEN_T;
 
       const cx = width / 2;
       const cy = height / 2;
-      const pull = 0.32;
-      const targetX = cx + (pointer.active ? (pointer.x - cx) * pull : 0);
-      const targetY = cy + (pointer.active ? (pointer.y - cy) * pull : 0);
-      look.x += (targetX - look.x) * 0.045;
-      look.y += (targetY - look.y) * 0.045;
+      const pull = 0.4;
+      const pointerActive = isActive && pointer.active;
+      const targetX = cx + (pointerActive ? (pointer.x - cx) * pull : 0);
+      const targetY = cy + (pointerActive ? (pointer.y - cy) * pull : 0);
+
+      if (isActive) {
+        look.x += (targetX - look.x) * 0.06;
+        look.y += (targetY - look.y) * 0.06;
+      } else {
+        look.x = cx;
+        look.y = cy;
+      }
 
       ctx2d!.clearRect(0, 0, width, height);
       ctx2d!.fillStyle = "#14140f";
 
-      const baseRadius = Math.min(width, height) * 0.3;
+      const baseRadius = Math.min(width, height) * 0.32;
       const cols = Math.ceil(width / SPACING) + 1;
       const rows = Math.ceil(height / SPACING) + 1;
+      const rot = t * 0.1;
 
-      const activePulses = pulses.filter((p) => now - p.born < 1400);
+      const activePulses = isActive
+        ? pulses.filter((p) => now - p.born < 1400)
+        : [];
       pulses.length = 0;
       pulses.push(...activePulses);
 
@@ -139,30 +166,34 @@ export function HalftoneField({
           const y = iy * SPACING;
           const dx = x - look.x;
           const dy = y - look.y;
-          const angle = Math.atan2(dy, dx);
+          const angle = Math.atan2(dy, dx) + rot;
           const dist = Math.sqrt(dx * dx + dy * dy);
+
+          const spike =
+            Math.pow(Math.abs(Math.sin(angle * 4 + t * 0.45)), 2.4) * 0.26;
 
           const boundary =
             baseRadius *
             (1 +
-              0.2 * Math.sin(angle * 3 + t * 0.6) +
-              0.12 * Math.sin(angle * 5 - t * 0.9) +
-              0.08 * Math.cos(angle * 2 + t * 0.35));
+              0.24 * Math.sin(angle * 3 + t * 0.85) +
+              0.15 * Math.sin(angle * 5 - t * 1.3) +
+              0.1 * Math.cos(angle * 2 + t * 0.5) +
+              spike);
 
           const edge = boundary - dist;
           let amt = smoothstep((edge + SOFT_EDGE) / (SOFT_EDGE * 2));
 
           for (const p of activePulses) {
             const age = (now - p.born) / 1000;
-            const ringR = age * 340;
+            const ringR = age * 380;
             const pdx = x - p.x;
             const pdy = y - p.y;
             const pDist = Math.sqrt(pdx * pdx + pdy * pdy);
-            const band = 46;
+            const band = 50;
             const ringDist = Math.abs(pDist - ringR);
             if (ringDist < band) {
               const fade = clamp01(1 - age / 1.4);
-              const bump = (1 - ringDist / band) * fade * 0.9;
+              const bump = (1 - ringDist / band) * fade;
               amt = clamp01(amt + bump);
             }
           }
@@ -199,7 +230,7 @@ export function HalftoneField({
     <canvas
       ref={canvasRef}
       className={className}
-      style={{ touchAction: "none", cursor: "crosshair" }}
+      style={{ touchAction: "none", cursor: active ? "crosshair" : "default" }}
       aria-label="Campo interativo de partículas — clique ou arraste para interagir"
       role="img"
     />

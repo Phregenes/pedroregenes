@@ -48,17 +48,11 @@ export default function Home() {
 
   return (
     <section className="relative h-[calc(100dvh-3.5rem)] overflow-hidden">
-      <div
-        className={[
-          "absolute inset-0 h-full w-full transition-all duration-700",
-          booted ? "opacity-100 blur-0" : "opacity-25 blur-[1px]",
-        ].join(" ")}
-      >
-        <HalftoneField
-          className="absolute inset-0 h-full w-full"
-          soundEnabled={soundOn}
-        />
-      </div>
+      <HalftoneField
+        className="absolute inset-0 h-full w-full"
+        soundEnabled={soundOn}
+        active={booted}
+      />
 
       <div className="pointer-events-none absolute inset-5 md:inset-8 flex items-start justify-between tag text-muted">
         <span className="bracket">CONFIG.PROFILE / 01</span>
@@ -67,7 +61,7 @@ export default function Home() {
 
       {booted ? (
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center px-6">
-          <div className="bg-paper/85 backdrop-blur-[2px] border border-line px-6 py-8 md:px-14 md:py-11 text-center max-w-xl flicker-in">
+          <div className="bg-paper border border-line px-6 py-8 md:px-14 md:py-11 text-center max-w-xl flicker-in">
             <p className="tag text-muted mb-4">
               CERTAIN UNCERTAINTIES // PORTFOLIO.EXE
             </p>
