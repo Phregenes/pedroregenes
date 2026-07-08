@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { initAudio, playBlip } from "~/lib/audio-engine";
+import { initAudio, playBlip, playGlitch } from "~/lib/audio-engine";
 import { loadSvgHalftone, type HalftonePoint } from "~/lib/svg-points";
 
 const FALLBACK_DRAWINGS = ["/bg-svg/2360761.svg", "/bg-svg/1299497.svg"];
@@ -136,6 +136,7 @@ export function ParticleDrawing({
     let raf = 0;
     let startTime = performance.now();
     let wasActive = activeRef.current;
+    let wasTransitioning = false;
 
     const pointer = { x: 0, y: 0, active: false };
     type Burst = { x: number; y: number; born: number };
@@ -256,6 +257,7 @@ export function ParticleDrawing({
       let currentIndex = 0;
       let nextIndex = 0;
       let morphT = 0;
+      let isTransitioning = false;
       if (isActive && count > 1) {
         const cycleMs = HOLD_MS + TRANSITION_MS;
         const elapsed = now - startTime;
@@ -263,8 +265,15 @@ export function ParticleDrawing({
         currentIndex = Math.floor(pos / cycleMs) % count;
         nextIndex = (currentIndex + 1) % count;
         const within = pos % cycleMs;
-        morphT = within > HOLD_MS ? smoothstep((within - HOLD_MS) / TRANSITION_MS) : 0;
+        isTransitioning = within > HOLD_MS;
+        morphT = isTransitioning ? smoothstep((within - HOLD_MS) / TRANSITION_MS) : 0;
       }
+
+      if (isTransitioning && !wasTransitioning) {
+        void initAudio();
+        if (soundRef.current) playGlitch();
+      }
+      wasTransitioning = isTransitioning;
 
       const shapeA = shapes[currentIndex];
       const shapeB = shapes[nextIndex];

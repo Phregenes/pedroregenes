@@ -1,7 +1,8 @@
 export const profile = {
   name: "Pedro Henrique Rolim Regenes",
   role: "Product Manager",
-  tagline: "Produto, growth e automação com IA em sistemas de missão crítica.",
+  tagline:
+    "Da engenharia de software ao produto, sempre quis entender como as coisas funcionam por dentro — e, vez ou outra, por que travam. Hoje transformo isso em growth e produtos que aguentam o tranco (quase sempre).",
   location: "São Paulo, SP — BR",
   email: "phregenes@gmail.com",
   phone: "+55 11 91593-8203",

@@ -76,6 +76,59 @@ export function playBlip(freq = 440, opts: { duration?: number; type?: Oscillato
   osc.stop(c.currentTime + duration + 0.02);
 }
 
+function makeDistortionCurve(amount: number) {
+  const n = 4096;
+  const curve = new Float32Array(n);
+  for (let i = 0; i < n; i++) {
+    const x = (i * 2) / n - 1;
+    curve[i] = ((3 + amount) * x * 20 * (Math.PI / 180)) / (Math.PI + amount * Math.abs(x));
+  }
+  return curve;
+}
+
+/** Short distorted glitch/sweep — signals the drawing is about to morph. */
+export function playGlitch() {
+  const c = getCtx();
+  if (!master) return;
+  const duration = 0.48;
+  const osc = c.createOscillator();
+  const osc2 = c.createOscillator();
+  const shaper = c.createWaveShaper();
+  const filter = c.createBiquadFilter();
+  const gain = c.createGain();
+
+  osc.type = "sawtooth";
+  osc2.type = "square";
+  osc.frequency.setValueAtTime(260, c.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(55, c.currentTime + duration);
+  osc2.frequency.setValueAtTime(150, c.currentTime);
+  osc2.frequency.exponentialRampToValueAtTime(42, c.currentTime + duration);
+
+  shaper.curve = makeDistortionCurve(70);
+  shaper.oversample = "4x";
+
+  filter.type = "bandpass";
+  filter.Q.value = 1.3;
+  filter.frequency.setValueAtTime(1400, c.currentTime);
+  filter.frequency.exponentialRampToValueAtTime(200, c.currentTime + duration);
+
+  gain.gain.setValueAtTime(0.0001, c.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.38, c.currentTime + 0.03);
+  gain.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + duration);
+
+  osc.connect(shaper);
+  osc2.connect(shaper);
+  shaper.connect(filter);
+  filter.connect(gain);
+  gain.connect(master);
+
+  osc.start();
+  osc2.start();
+  const stopAt = c.currentTime + duration + 0.03;
+  osc.stop(stopAt);
+  osc2.stop(stopAt);
+}
+
 /** Soft, quiet transient for hover/scan ticks. */
 export function playTick(freq = 900) {
   const c = getCtx();
