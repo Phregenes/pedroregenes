@@ -19,13 +19,15 @@ export default function SiteLayout() {
       <div className="grain-overlay" aria-hidden="true" />
 
       <header className="fixed top-0 inset-x-0 z-40 border-b border-line bg-paper/92 backdrop-blur-sm">
-        <div className="mx-auto max-w-6xl px-5 md:px-8 h-14 flex items-center justify-between">
+        <div className="mx-auto max-w-6xl px-4 sm:px-5 md:px-8 h-14 flex items-center justify-between gap-2">
           <Link
             to="/"
-            className="font-bold tracking-tight text-[13px] hover:opacity-60 transition-opacity"
+            className="shrink-0 font-bold tracking-tight text-[13px] hover:opacity-60 transition-opacity"
           >
             P.H.R.R
-            <span className="text-muted font-normal">/{new Date().getFullYear()}</span>
+            <span className="hidden sm:inline text-muted font-normal">
+              /{new Date().getFullYear()}
+            </span>
           </Link>
 
           <nav className="flex items-center gap-0.5 md:gap-1">
@@ -36,7 +38,7 @@ export default function SiteLayout() {
                 end={item.to === "/"}
                 className={({ isActive }) =>
                   [
-                    "tag px-2.5 py-1.5 rounded-sm transition-colors",
+                    "tag px-2 py-1.5 sm:px-2.5 rounded-sm transition-colors whitespace-nowrap",
                     isActive
                       ? "bg-ink text-paper"
                       : "text-ink/70 hover:text-ink hover:bg-ink/5",
@@ -45,7 +47,9 @@ export default function SiteLayout() {
               >
                 {({ isActive }) => (
                   <>
-                    <span className="opacity-50 mr-1">{item.code}/</span>
+                    <span className="hidden sm:inline opacity-50 mr-1">
+                      {item.code}/
+                    </span>
                     {item.label}
                     {isActive ? <span className="ml-1">■</span> : null}
                   </>

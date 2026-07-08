@@ -21,9 +21,29 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
+const MOBILE_QUERY = "(max-width: 767px)";
+
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const mql = window.matchMedia(MOBILE_QUERY);
+    setIsMobile(mql.matches);
+    const onChange = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mql.addEventListener("change", onChange);
+    return () => mql.removeEventListener("change", onChange);
+  }, []);
+
+  return isMobile;
+}
+
 export default function Home() {
+  const isMobile = useIsMobile();
   const [booted, setBooted] = useState(false);
   const [soundOn, setSoundOn] = useState(true);
+  // No animation to "reveal" on mobile, so skip the boot gate entirely and
+  // just show the profile card straight away.
+  const showContent = booted || isMobile;
 
   const handleBoot = useCallback(async () => {
     await initAudio();
@@ -52,20 +72,35 @@ export default function Home() {
     return () => setDroneActive(false);
   }, []);
 
+  // Esc returns to the "iniciar transmissão" boot screen.
+  useEffect(() => {
+    if (isMobile) return;
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        setDroneActive(false);
+        setBooted(false);
+      }
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [isMobile]);
+
   return (
     <section className="relative h-[calc(100dvh-3.5rem)] overflow-hidden">
-      <ParticleDrawing
-        className="absolute inset-0 h-full w-full"
-        soundEnabled={soundOn}
-        active={booted}
-      />
+      {isMobile ? null : (
+        <ParticleDrawing
+          className="absolute inset-0 h-full w-full"
+          soundEnabled={soundOn}
+          active={booted}
+        />
+      )}
 
       <div className="pointer-events-none absolute inset-5 md:inset-8 flex items-start justify-between tag text-muted">
         <span className="bracket">CONFIG.PROFILE / 01</span>
         <span className="bracket">PROGRAM NO.01</span>
       </div>
 
-      {booted ? (
+      {showContent ? (
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center px-6">
           <div className="bg-paper/78 backdrop-blur-md border border-line px-6 py-8 md:px-14 md:py-11 text-center max-w-xl flicker-in">
             <p className="tag text-muted mb-4">
@@ -121,23 +156,25 @@ export default function Home() {
         <span className="hidden sm:block justify-self-center opacity-70 text-center">
           PASSE O MOUSE OU CLIQUE PARA INTERAGIR
         </span>
-        <div className="flex flex-col items-end gap-2 justify-self-end">
-          <span className="bracket">
-            STATUS ={" "}
-            <span className="text-accent">
-              {booted ? "TRANSMITTING" : "STANDBY"}
+        {isMobile ? null : (
+          <div className="flex flex-col items-end gap-2 justify-self-end">
+            <span className="bracket">
+              STATUS ={" "}
+              <span className="text-accent">
+                {booted ? "TRANSMITTING" : "STANDBY"}
+              </span>
             </span>
-          </span>
-          {booted ? (
-            <button
-              type="button"
-              onClick={toggleSound}
-              className="pointer-events-auto tag border border-line bg-paper/90 px-3 py-1.5 hover:border-ink transition-colors cursor-pointer"
-            >
-              SOM: {soundOn ? "ON" : "OFF"}
-            </button>
-          ) : null}
-        </div>
+            {booted ? (
+              <button
+                type="button"
+                onClick={toggleSound}
+                className="pointer-events-auto tag border border-line bg-paper/90 px-3 py-1.5 hover:border-ink transition-colors cursor-pointer"
+              >
+                SOM: {soundOn ? "ON" : "OFF"}
+              </button>
+            ) : null}
+          </div>
+        )}
       </div>
     </section>
   );
