@@ -102,7 +102,7 @@ export default function Home() {
 
       {showContent ? (
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center px-6">
-          <div className="bg-paper/78 backdrop-blur-md border border-line px-6 py-8 md:px-14 md:py-11 text-center max-w-xl flicker-in">
+          <div className="bg-paper/55 backdrop-blur-sm border border-line px-6 py-8 md:px-14 md:py-11 text-center max-w-xl flicker-in">
             <p className="tag text-muted mb-4">
               CERTAIN UNCERTAINTIES // PORTFOLIO.EXE
             </p>
@@ -130,7 +130,7 @@ export default function Home() {
         </div>
       ) : (
         <div className="absolute inset-0 flex items-center justify-center px-6">
-          <div className="pointer-events-auto bg-paper/78 backdrop-blur-md border border-line px-8 py-10 md:px-16 md:py-14 text-center max-w-md">
+          <div className="pointer-events-auto bg-paper/55 backdrop-blur-sm border border-line px-8 py-10 md:px-16 md:py-14 text-center max-w-md">
             <p className="tag text-muted mb-4">
               CERTAIN UNCERTAINTIES // PORTFOLIO.EXE
             </p>
