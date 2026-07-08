@@ -7,7 +7,7 @@ export function meta({}: Route.MetaArgs) {
     {
       name: "description",
       content:
-        "Cases de produto: Vizo, Inner AI e Parque PopHaus. Growth, automação com IA e infraestrutura de pagamentos.",
+        "Cases de produto e engenharia: Vizo, Inner AI, Parque PopHaus e Arcotech. Growth, automação com IA, infraestrutura de pagamentos e front-end.",
     },
   ];
 }

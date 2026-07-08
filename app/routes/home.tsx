@@ -104,7 +104,7 @@ export default function Home() {
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center px-6">
           <div className="bg-paper/55 backdrop-blur-sm border border-line px-6 py-8 md:px-14 md:py-11 text-center max-w-xl flicker-in">
             <p className="tag text-muted mb-4">
-              CERTAIN UNCERTAINTIES // PORTFOLIO.EXE
+              TRANSMISSÃO PESSOAL // SINAL ABERTO
             </p>
             <h1 className="text-[15vw] leading-[0.9] sm:text-[9vw] md:text-[4.2vw] font-bold tracking-tight whitespace-pre-line">
               {"PEDRO\nREGENES"}
@@ -132,7 +132,7 @@ export default function Home() {
         <div className="absolute inset-0 flex items-center justify-center px-6">
           <div className="pointer-events-auto bg-paper/55 backdrop-blur-sm border border-line px-8 py-10 md:px-16 md:py-14 text-center max-w-md">
             <p className="tag text-muted mb-4">
-              CERTAIN UNCERTAINTIES // PORTFOLIO.EXE
+              TRANSMISSÃO PESSOAL // SINAL ABERTO
             </p>
             <p className="tag text-muted mb-5">[ SYSTEM.BOOT ]</p>
             <button
@@ -153,9 +153,13 @@ export default function Home() {
         <span className="bracket justify-self-start">
           COORD = {profile.location}
         </span>
-        <span className="hidden sm:block justify-self-center opacity-70 text-center">
-          PASSE O MOUSE OU CLIQUE PARA INTERAGIR
-        </span>
+        {booted ? (
+          <span className="hidden sm:block justify-self-center opacity-70 text-center">
+            PASSE O MOUSE OU CLIQUE PARA INTERAGIR
+          </span>
+        ) : (
+          <span />
+        )}
         {isMobile ? null : (
           <div className="flex flex-col items-end gap-2 justify-self-end">
             <span className="bracket">

@@ -157,4 +157,43 @@ export const experiences: Experience[] = [
       },
     ],
   },
+  {
+    id: "arcotech-pleno",
+    code: "CASE.05",
+    org: "Arcotech",
+    role: "Desenvolvedor de Front-end Pleno",
+    duration: "2022.03 → 2023.02",
+    status: "concluído",
+    summary:
+      "Atuação em nova equipe dedicada ao desenvolvimento de uma tecnologia própria da empresa, em modelo híbrido em São Paulo.",
+    params: [
+      {
+        label: "Nova Frente de Produto",
+        value:
+          "Entrada em outra equipe do time de engenharia, dedicada ao desenvolvimento de uma tecnologia própria da Arcotech.",
+      },
+    ],
+  },
+  {
+    id: "arcotech-junior",
+    code: "CASE.06",
+    org: "Arcotech",
+    role: "Desenvolvedor de Front-end Junior",
+    duration: "2021.05 → 2022.03",
+    status: "concluído",
+    summary:
+      "Construção de Design System com Storybook, TypeScript e JCSS, com testes automatizados via Jest para garantir a qualidade dos componentes.",
+    params: [
+      {
+        label: "Design System",
+        value:
+          "Participação ativa na construção de um Design System utilizando Storybook, TypeScript e JCSS.",
+      },
+      {
+        label: "Qualidade & Testes",
+        value:
+          "Implementação de testes com Jest para garantir a confiabilidade dos componentes entregues.",
+      },
+    ],
+  },
 ];

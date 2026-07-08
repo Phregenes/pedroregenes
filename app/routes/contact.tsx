@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import type { Route } from "./+types/contact";
 import { ParticleDrawing } from "~/components/particle-drawing";
-import { profile } from "~/data/resume";
+import { experiences, profile } from "~/data/resume";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -14,8 +14,11 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
+const currentRole =
+  experiences.find((exp) => exp.id === "vizo")?.role ?? profile.role;
+
 const infoRows = [
-  { label: "NOW", value: `${profile.role} @ Vizo` },
+  { label: "NOW", value: `${currentRole} @ Vizo` },
   { label: "EMAIL", value: profile.email, href: `mailto:${profile.email}` },
   {
     label: "PHONE",

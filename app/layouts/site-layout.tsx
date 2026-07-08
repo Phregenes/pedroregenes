@@ -75,7 +75,7 @@ export default function SiteLayout() {
         <footer className="border-t border-line">
           <div className="mx-auto max-w-6xl px-5 md:px-8 py-7 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <p className="tag text-muted">
-              © {year} {profile.name} — feito à mão, sem tracking.
+              © {year} {profile.name}
             </p>
             <div className="flex items-center gap-5 tag">
               <a
